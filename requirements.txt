@@ -1,0 +1,5 @@
+
+pandas 
+numpy
+sklearn
+mlflow=1.3
