@@ -15,8 +15,6 @@ jobs:
         brew update
     - name: Install dependencies
       run: |
-        
-        brew upgrade
         pip install -r requirements.txt
     - name: Run Python program
       run: python train.py
