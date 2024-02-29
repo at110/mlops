@@ -12,9 +12,6 @@ jobs:
         eval "$(conda shell.bash hook)"
         echo "source ~/opt/anaconda3/etc/profile.d/conda.sh" >> $GITHUB_ENV
         conda info
-        conda env list
-        echo $SHELL
-        echo $PATH
         conda activate mlflow 
       shell: bash 
     - name: Run Python program
