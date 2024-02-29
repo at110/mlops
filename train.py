@@ -1,4 +1,4 @@
-import pandas as pd
+#import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
@@ -82,10 +82,10 @@ def train(in_alpha, in_l1_ratio):
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
         mlflow.sklearn.log_model(lr, "model")
-        df = pd.DataFrame(columns=['rmse','r2','mae'])
-        df.loc[len(df.index)] = [rmse, r2, mae]
-        df.to_csv('metric.csv',index=False)
-        mlflow.log_artifact("metric.csv")
+        #df = pd.DataFrame(columns=['rmse','r2','mae'])
+        #df.loc[len(df.index)] = [rmse, r2, mae]
+        #df.to_csv('metric.csv',index=False)
+        #mlflow.log_artifact("metric.csv")
 
 alphas = [0.25, 0.5, 0.75]
 l1_ratios = [0.25, 0.5, 0.75]
