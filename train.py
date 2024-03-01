@@ -63,7 +63,7 @@ def train(in_alpha, in_l1_ratio):
         l1_ratio = float(in_l1_ratio)
 
     # Useful for multiple runs
-    with mlflow.start_run(run_name = str(alpha)+str(l1)):
+    with mlflow.start_run(run_name = str(alpha)+str(l1_ratio)):
         # Execute ElasticNet
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
