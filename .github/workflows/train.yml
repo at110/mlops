@@ -4,15 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       Experiment:
-        description: 'Log level'     
+        description: 'Experiment Name '     
         required: true
         default: 'Experiment1'
       Alpha:
-        description: 'Hyper Parameter'     
+        description: 'Hyper Parameter Alpha'     
         required: true
         default: '0.5'
       l1:
-        description: 'Hyper Parameter'     
+        description: 'Hyper Parameter L1 ratio'     
         required: true
         default: '0.5'
 jobs:
