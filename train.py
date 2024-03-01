@@ -8,6 +8,7 @@ from mlflow.exceptions import MlflowException
 import os
 import mlflow
 import mlflow.sklearn
+import sys
 
 os.environ[
     "MLFLOW_TRACKING_URI"
@@ -16,7 +17,7 @@ os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
 os.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
 
-experiment_name = "demo_experiment4"
+experiment_name = sys.argv[1]
 try:
     mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
 except MlflowException as e:
