@@ -88,8 +88,7 @@ def train(in_alpha, in_l1_ratio):
         df.to_csv('metric.csv',index=False)
         mlflow.log_artifact("metric.csv")
 
-alphas = [0.25, 0.5, 0.75]
-l1_ratios = [0.25, 0.5, 0.75]
-for alpha in alphas:
-    for l1_ratio in l1_ratios:
-        train(alpha, l1_ratio)
+alpha = float(sys.argv[2])
+l1_ratio = float(sys.argv[3])
+
+train(alpha, l1_ratio)
