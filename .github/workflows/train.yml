@@ -7,6 +7,14 @@ on:
         description: 'Log level'     
         required: true
         default: 'Experiment1'
+      Alpha:
+        description: 'Hyper Parameter'     
+        required: true
+        default: '0.5'
+      l1:
+        description: 'Hyper Parameter'     
+        required: true
+        default: '0.5'
 jobs:
   build:
     runs-on: self-hosted # This targets any self-hosted runner
@@ -22,5 +30,5 @@ jobs:
         pip install pandas
         pip install numpy
         conda info
-        python train.py ${{ inputs.Experiment }}
+        python train.py ${{ inputs.Experiment }} ${{ inputs.Alpha }} ${{ inputs.l1 }}
       shell: bash 
