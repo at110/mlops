@@ -18,6 +18,8 @@ os.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
 
 experiment_name = sys.argv[1]
+alpha = float(sys.argv[2])
+l1_ratio = float(sys.argv[3])
 try:
     mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
 except MlflowException as e:
@@ -61,7 +63,7 @@ def train(in_alpha, in_l1_ratio):
         l1_ratio = float(in_l1_ratio)
 
     # Useful for multiple runs
-    with mlflow.start_run():
+    with mlflow.start_run(run_name = str(alpha)+str(l1)):
         # Execute ElasticNet
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
@@ -88,7 +90,5 @@ def train(in_alpha, in_l1_ratio):
         df.to_csv('metric.csv',index=False)
         mlflow.log_artifact("metric.csv")
 
-alpha = float(sys.argv[2])
-l1_ratio = float(sys.argv[3])
 
 train(alpha, l1_ratio)
