@@ -64,12 +64,19 @@ def train(in_alpha, in_l1_ratio):
 
     # Useful for multiple runs
     with mlflow.start_run(run_name = 'Alpha='+str(alpha)+'_l1Ration='+str(l1_ratio)):
+
+
+        mlflow.log_input(train, context='training')
+        mlflow.log_input(test, context='test')
+        
         # Execute ElasticNet
         lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
         lr.fit(train_x, train_y)
 
         # Evaluate Metrics
         predicted_qualities = lr.predict(test_x)
+        mlflow.log_input(predicted_qualities, context='predictions')
+        
         (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
 
         # Print out metrics
