@@ -1,6 +1,12 @@
 name: Run Python Program
+
 on:
   workflow_dispatch:
+    inputs:
+      Experiment:
+        description: 'Log level'     
+        required: true
+        default: 'Experiment1'
 jobs:
   build:
     runs-on: self-hosted # This targets any self-hosted runner
@@ -16,5 +22,5 @@ jobs:
         pip install pandas
         pip install numpy
         conda info
-        python train.py
+        python train.py ${{ inputs.Experiment }}
       shell: bash 
