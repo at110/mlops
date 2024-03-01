@@ -16,6 +16,5 @@ jobs:
         pip install pandas
         pip install numpy
         conda info
+        python train.py
       shell: bash 
-    - name: Run Python program
-      run: python train.py
