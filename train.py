@@ -10,9 +10,12 @@ import mlflow
 import mlflow.sklearn
 import sys
 
+#os.environ[
+#    "MLFLOW_TRACKING_URI"
+#] = "sqlite:////Users/ashishtamhane/mlflow_postgres_minio/mlflow/mlflow.db"
 os.environ[
     "MLFLOW_TRACKING_URI"
-] = "sqlite:////Users/ashishtamhane/mlflow_postgres_minio/mlflow/mlflow.db"
+] = "postgresql://user:password@localhost:5435/mlflowdb"
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
 os.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
