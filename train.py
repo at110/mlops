@@ -67,7 +67,7 @@ def train(in_alpha: float, in_l1_ratio: float) -> None:
 
     # Optionally, save metrics to a CSV file and log it as an artifact
     metrics_df = pd.DataFrame({"RMSE": [rmse], "MAE": [mae], "R2": [r2]})
-    metrics_df.to_csv('metrics.csv', index=False)
+    metrics_df.to_csv('metric.csv', index=False)
     mlflow.log_artifact("metrics.csv")
 
 if __name__ == "__main__":
