@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       Experiment:
-        description: 'Experiment Name '     
+        description: 'Experiment Name'     
         required: true
-        default: 'Experiment1'
+        default: 'Experiment-mlops'
       Alpha:
         description: 'Hyper Parameter Alpha'     
         required: true
@@ -15,20 +15,20 @@ on:
         description: 'Hyper Parameter L1 ratio'     
         required: true
         default: '0.5'
+
 jobs:
   build:
-    runs-on: self-hosted # This targets any self-hosted runner
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v2
-    - name: Install dependencies and run train/predict model
+
+    - name: Set up Python environment
       run: |
         eval "$(conda shell.bash hook)"
-        conda activate mlflow-latest 
-        pip uninstall pandas -y
-        pip uninstall numpy -y
-        pip install pandas
-        pip install numpy
+        conda activate mlflow-latest
         conda info
-        python train.py ${{ inputs.Experiment }} ${{ inputs.Alpha }} ${{ inputs.l1 }}
-      shell: bash 
+        
+    - name: Run train.py with parameters
+      run: python train.py "${{ github.event.inputs.Experiment }}" "${{ github.event.inputs.Alpha }}" "${{ github.event.inputs.l1 }}"
+      shell: bash
