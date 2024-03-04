@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
     # Set up MLflow experiment
     try:
-        mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
+        mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow")
     except MlflowException as e:
         print(e)
 
