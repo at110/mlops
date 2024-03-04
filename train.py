@@ -1,101 +1,86 @@
+import os
+import sys
 import pandas as pd
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import ElasticNet
+import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
-import os
-import mlflow
-import mlflow.sklearn
-import sys
+import unittest
 
-#os.environ[
-#    "MLFLOW_TRACKING_URI"
-#] = "sqlite:////Users/ashishtamhane/mlflow_postgres_minio/mlflow/mlflow.db"
-os.environ[
-    "MLFLOW_TRACKING_URI"
-] = "postgresql://user:password@localhost:5435/mlflowdb"
+# Configure environment variables for MLflow
+os.environ["MLFLOW_TRACKING_URI"] = "postgresql://user:password@localhost:5435/mlflowdb"
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
 os.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
 
-experiment_name = sys.argv[1]
-alpha = float(sys.argv[2])
-l1_ratio = float(sys.argv[3])
-try:
-    mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
-except MlflowException as e:
-    print(e)
-mlflow.set_experiment(experiment_name)
+def eval_metrics(actual: np.ndarray, pred: np.ndarray) -> tuple:
+    """
+    Evaluate regression metrics.
 
+    Parameters:
+    actual (np.ndarray): Actual values.
+    pred (np.ndarray): Predicted values.
 
-def eval_metrics(actual, pred):
+    Returns:
+    tuple: Returns the RMSE, MAE, and R2 metrics.
+    """
     rmse = np.sqrt(mean_squared_error(actual, pred))
     mae = mean_absolute_error(actual, pred)
     r2 = r2_score(actual, pred)
     return rmse, mae, r2
 
+def train(in_alpha: float, in_l1_ratio: float) -> None:
+    """
+    Train an ElasticNet model and log metrics, parameters, and the model to MLflow.
 
-def train(in_alpha, in_l1_ratio):
+    Parameters:
+    in_alpha (float): The alpha value for the ElasticNet model.
+    in_l1_ratio (float): The l1_ratio value for the ElasticNet model.
+    """
     np.random.seed(40)
 
-    # Read the wine-quality csv file from the URL
+    # Load and split the dataset
     csv_url = "http://archive.ics.uci.edu/ml/machine-learning-databases/wine-quality/winequality-red.csv"
     data = pd.read_csv(csv_url, sep=";")
-
-    # Split the data into training and test sets. (0.75, 0.25) split.
     train, test = train_test_split(data)
 
-    # The predicted column is "quality" which is a scalar from [3, 9]
-    train_x = train.drop(["quality"], axis=1)
-    test_x = test.drop(["quality"], axis=1)
-    train_y = train[["quality"]]
-    test_y = test[["quality"]]
+    # Prepare training and testing data
+    train_x, test_x = train.drop(["quality"], axis=1), test.drop(["quality"], axis=1)
+    train_y, test_y = train[["quality"]], test[["quality"]]
 
-    # Set default values if no alpha is provided
-    if float(in_alpha) is None:
-        alpha = 0.5
-    else:
-        alpha = float(in_alpha)
+    # Initialize and train the ElasticNet model
+    lr = ElasticNet(alpha=in_alpha, l1_ratio=in_l1_ratio, random_state=42)
+    lr.fit(train_x, train_y)
+    predicted_qualities = lr.predict(test_x)
 
-    # Set default values if no l1_ratio is provided
-    if float(in_l1_ratio) is None:
-        l1_ratio = 0.5
-    else:
-        l1_ratio = float(in_l1_ratio)
+    # Evaluate the model
+    rmse, mae, r2 = eval_metrics(test_y, predicted_qualities)
 
-    # Useful for multiple runs
-    with mlflow.start_run(run_name = 'Alpha='+str(alpha)+'_l1Ration='+str(l1_ratio)):
+    # Log metrics, parameters, and model to MLflow
+    mlflow.log_param("alpha", in_alpha)
+    mlflow.log_param("l1_ratio", in_l1_ratio)
+    mlflow.log_metrics({"rmse": rmse, "mae": mae, "r2": r2})
+    mlflow.sklearn.log_model(lr, "model")
 
+    # Optionally, save metrics to a CSV file and log it as an artifact
+    metrics_df = pd.DataFrame({"RMSE": [rmse], "MAE": [mae], "R2": [r2]})
+    metrics_df.to_csv('metrics.csv', index=False)
+    mlflow.log_artifact("metrics.csv")
 
-      
-        # Execute ElasticNet
-        lr = ElasticNet(alpha=alpha, l1_ratio=l1_ratio, random_state=42)
-        lr.fit(train_x, train_y)
+if __name__ == "__main__":
+    experiment_name = sys.argv[1]
+    alpha = float(sys.argv[2])
+    l1_ratio = float(sys.argv[3])
 
-        # Evaluate Metrics
-        predicted_qualities = lr.predict(test_x)
-        
-        (rmse, mae, r2) = eval_metrics(test_y, predicted_qualities)
+    # Set up MLflow experiment
+    mlflow.set_experiment(experiment_name)
+    try:
+        mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
+    except MlflowException as e:
+        print(e)
 
-        # Print out metrics
-        print("Elasticnet model (alpha=%f, l1_ratio=%f):" % (alpha, l1_ratio))
-        print("  RMSE: %s" % rmse)
-        print("  MAE: %s" % mae)
-        print("  R2: %s" % r2)
-
-        # Log parameter, metrics, and model to MLflow
-        mlflow.log_param("alpha", alpha)
-        mlflow.log_param("l1_ratio", l1_ratio)
-        mlflow.log_metric("rmse", rmse)
-        mlflow.log_metric("r2", r2)
-        mlflow.log_metric("mae", mae)
-        mlflow.sklearn.log_model(lr, "model")
-        df = pd.DataFrame(columns=['rmse','r2','mae'])
-        df.loc[len(df.index)] = [rmse, r2, mae]
-        df.to_csv('metric.csv',index=False)
-        mlflow.log_artifact("metric.csv")
-
-
-train(alpha, l1_ratio)
+    with mlflow.start_run():
+        train(alpha, l1_ratio)
