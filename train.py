@@ -9,6 +9,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
 import unittest
+import env_variables.py
 
 def eval_metrics(actual: np.ndarray, pred: np.ndarray) -> tuple:
     """
