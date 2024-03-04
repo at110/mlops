@@ -9,10 +9,7 @@ import mlflow
 from mlflow.tracking import MlflowClient
 from mlflow.exceptions import MlflowException
 import unittest
-os.environ["MLFLOW_TRACKING_URI"] = "postgresql://user:password@localhost:5435/mlflowdb"
-os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["AWS_ACCESS_KEY_ID"] = "minioadmin"
-os.environ["AWS_SECRET_ACCESS_KEY"] = "minioadmin"
+import env_variables
 
 
 def eval_metrics(actual: np.ndarray, pred: np.ndarray) -> tuple:
@@ -79,6 +76,6 @@ if __name__ == "__main__":
         mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow")
     except MlflowException as e:
         print(e)
-
+    mlflow.set_experiment(experiment_name)
     with mlflow.start_run():
         train(alpha, l1_ratio)
