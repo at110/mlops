@@ -81,6 +81,10 @@ def log_results(model, alpha: float, l1_ratio: float, rmse: float, mae: float, r
     mlflow.log_param("l1_ratio", l1_ratio)
     mlflow.log_metrics({"rmse": rmse, "mae": mae, "r2": r2})
     mlflow.sklearn.log_model(model, "model")
+     # Optionally, save metrics to a CSV file and log it as an artifact
+    metrics_df = pd.DataFrame({"RMSE": [rmse], "MAE": [mae], "R2": [r2]})
+    metrics_df.to_csv('metric.csv', index=False)
+    mlflow.log_artifact("metric.csv")
 
 def train_and_log(in_alpha: float, in_l1_ratio: float):
     """
