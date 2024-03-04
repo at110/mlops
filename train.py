@@ -77,5 +77,6 @@ if __name__ == "__main__":
     except MlflowException as e:
         print(e)
     mlflow.set_experiment(experiment_name)
-    with mlflow.start_run():
+    run_name = f"alpha_{alpha}_l1ratio_{l1_ratio}"
+    with mlflow.start_run(run_name=run_name):
         train(alpha, l1_ratio)
