@@ -11,23 +11,7 @@ from mlflow.exceptions import MlflowException
 import unittest
 import env_variables
 
-"""
-def eval_metrics(actual: np.ndarray, pred: np.ndarray) -> tuple:
-    """
-    Evaluate regression metrics.
 
-    Parameters:
-    actual (np.ndarray): Actual values.
-    pred (np.ndarray): Predicted values.
-
-    Returns:
-    tuple: Returns the RMSE, MAE, and R2 metrics.
-    """
-    rmse = np.sqrt(mean_squared_error(actual, pred))
-    mae = mean_absolute_error(actual, pred)
-    r2 = r2_score(actual, pred)
-    return rmse, mae, r2
-"""
 def load_and_split_data(csv_url: str, test_size: float = 0.25, random_state: int = 42) -> tuple:
     """
     Load data from CSV URL and split it into training and testing datasets.
