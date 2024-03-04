@@ -71,11 +71,10 @@ if __name__ == "__main__":
     l1_ratio = float(sys.argv[3])
 
     # Set up MLflow experiment
-    mlflow.set_experiment(experiment_name)
-    #try:
-    #    mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
-    #except MlflowException as e:
-    #    print(e)
+    try:
+        mlflow.create_experiment(experiment_name, artifact_location="s3://mlflow/")
+    except MlflowException as e:
+        print(e)
 
     with mlflow.start_run():
         train(alpha, l1_ratio)
